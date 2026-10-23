@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="docTitle">RZ Soluciones | Muebles Metálicos y de Madera</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            200: '#bae0fd',
+                            500: '#0066cc',
+                            600: '#0052a3',
+                            700: '#003d7a',
+                            800: '#002952',
+                            900: '#001429',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #0066cc;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans flex flex-col min-h-screen">
+
+    <!-- HEADER Y NAVEGACIÓN -->
+    <header class="sticky top-0 z-40 bg-white border-b border-slate-200 shadow-sm">
+        <!-- Topbar corporativo dinámico -->
+        <div class="bg-brand-900 text-white text-xs py-1.5 px-4">
+            <div class="max-w-7xl mx-auto flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                    <span class="flex items-center gap-1"><i data-lucide="phone" class="w-3 h-3"></i> <span id="headerPhone">+52 (55) 1234-5678</span></span>
+                    <span class="hidden md:flex items-center gap-1"><i data-lucide="mail" class="w-3 h-3"></i> <span id="headerEmail">contacto@rzsoluciones.com</span></span>
+                </div>
+                <div class="flex items-center gap-4">
+                    <span id="headerTagline" class="text-brand-200 hidden sm:inline">Fabricación a medida • Calidad Garantizada</span>
+                    <!-- Estado de sesión Admin -->
+                    <div id="adminBadge" class="hidden flex items-center gap-2 bg-emerald-600/90 text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-emerald-400">
+                        <i data-lucide="shield-check" class="w-3 h-3"></i>
+                        <span>Modo Admin</span>
+                        <button onclick="logoutAdmin()" class="hover:text-red-200 ml-1 underline text-[10px]" title="Cerrar Sesión">Salir</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navbar principal -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20 gap-4">
+                
+                <!-- Logo corporativo dinámico -->
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="#" class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-brand-600 rounded-xl flex items-center justify-center text-white font-black text-2xl shadow-md shadow-brand-500/20 tracking-wider">
+                            RZ
+                        </div>
+                        <div class="flex flex-col">
+                            <span id="brandNameDisplay" class="font-extrabold text-xl tracking-tight text-slate-900 leading-none">RZ <span class="text-brand-600">SOLUCIONES</span></span>
+                            <span id="brandSubtitleDisplay" class="text-[10px] font-medium tracking-widest text-slate-500 uppercase mt-1">Muebles Metálicos & Madera</span>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Búsqueda en Desktop -->
+                <div class="hidden md:flex flex-1 max-w-md mx-8">
+                    <div class="relative w-full">
+                        <input type="text" id="searchInput" oninput="filterProducts()" placeholder="Buscar escritorios, estantes, mesas..." 
+                            class="w-full pl-10 pr-4 py-2.5 bg-slate-100 border border-slate-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all">
+                        <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-3 text-slate-400"></i>
+                    </div>
+                </div>
+
+                <!-- Menú e Interacción -->
+                <div class="flex items-center gap-4 sm:gap-6">
+                    <nav class="hidden lg:flex items-center gap-6 text-sm font-semibold text-slate-700">
+                        <a href="#catalogo" class="hover:text-brand-600 transition-colors">Catálogo</a>
+                        <a href="#nosotros" class="hover:text-brand-600 transition-colors">Nosotros</a>
+                        <a href="#contacto" class="hover:text-brand-600 transition-colors">Contacto</a>
+                    </nav>
+
+                    <!-- Botón Panel de Admin solo si está logueado -->
+                    <button id="btnAdminPanelHeader" onclick="toggleAdminPanel()" class="hidden bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs sm:text-sm px-3 sm:px-4 py-2.5 rounded-xl flex items-center gap-2 shadow-md transition-all">
+                        <i data-lucide="sliders" class="w-4 h-4"></i>
+                        <span class="hidden sm:inline">Panel Admin</span>
+                    </button>
+
+                    <!-- Botón del Carrito -->
+                    <button onclick="toggleCart()" class="relative bg-brand-50 hover:bg-brand-100 text-brand-700 p-3 rounded-full flex items-center justify-center transition-all group">
+                        <i data-lucide="shopping-cart" class="w-6 h-6 group-hover:scale-110 transition-transform"></i>
+                        <span id="cartCount" class="absolute -top-1 -right-1 bg-brand-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center shadow">
+                            0
+                        </span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Búsqueda Mobile -->
+            <div class="pb-4 md:hidden">
+                <div class="relative w-full">
+                    <input type="text" id="searchInputMobile" oninput="filterProductsMobile()" placeholder="Buscar muebles..." 
+                        class="w-full pl-10 pr-4 py-2 bg-slate-100 border border-slate-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                    <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-2.5 text-slate-400"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- BANNER HERO DINÁMICO -->
+    <section class="relative bg-gradient-to-r from-brand-900 via-brand-800 to-brand-700 text-white overflow-hidden py-16 lg:py-24">
+        <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div class="space-y-6 text-center lg:text-left">
+                    <span id="heroBadge" class="inline-block bg-brand-500/30 text-brand-100 text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-full border border-brand-400/30">
+                        Diseño Resiliente & Funcional
+                    </span>
+                    <h1 id="heroTitle" class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight">
+                        Muebles Metálicos y de Madera de <span class="text-brand-200">Alta Calidad</span>
+                    </h1>
+                    <p id="heroDescription" class="text-slate-200 text-base sm:text-lg max-w-xl mx-auto lg:mx-0 font-normal">
+                        Soluciones robustas para oficina, hogar e industria. Combinamos la resistencia estructural del acero con la elegancia natural de la madera.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-2">
+                        <a href="#catalogo" class="bg-white text-brand-800 hover:bg-brand-50 font-bold px-8 py-3.5 rounded-xl transition-all text-center shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                            Ver Catálogo
+                        </a>
+                        <a id="heroWhatsappBtn" href="https://wa.me/525512345678" target="_blank" class="bg-transparent border-2 border-white/80 text-white hover:bg-white/10 font-bold px-8 py-3.5 rounded-xl transition-all text-center flex items-center justify-center gap-2">
+                            <i data-lucide="message-circle" class="w-5 h-5"></i>
+                            Cotizar a Medida
+                        </a>
+                    </div>
+                </div>
+                <div class="relative hidden lg:block">
+                    <div class="relative mx-auto w-full max-w-md rounded-2xl overflow-hidden shadow-2xl border-4 border-white/10 transform rotate-1 hover:rotate-0 transition-transform duration-500">
+                        <img id="heroImage" src="https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=800&q=80" alt="Mueble Industrial RZ Soluciones" class="w-full h-[400px] object-cover">
+                        <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-6">
+                            <p class="text-white font-bold text-lg">Estructuras Robustas</p>
+                            <p class="text-slate-300 text-sm">Garantía de durabilidad para un uso intensivo</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CARACTERÍSTICAS DE LA EMPRESA -->
+    <section class="py-8 bg-white border-b border-slate-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="flex items-center gap-4 p-4 rounded-xl bg-slate-50 border border-slate-100">
+                    <div class="p-3 bg-brand-100 text-brand-600 rounded-lg">
+                        <i data-lucide="shield-check" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm text-slate-800">Alta Durabilidad</h4>
+                        <p class="text-xs text-slate-500">Acero y maderas tratadas</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4 p-4 rounded-xl bg-slate-50 border border-slate-100">
+                    <div class="p-3 bg-brand-100 text-brand-600 rounded-lg">
+                        <i data-lucide="wrench" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm text-slate-800">A Medida</h4>
+                        <p class="text-xs text-slate-500">Proyectos personalizados</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4 p-4 rounded-xl bg-slate-50 border border-slate-100">
+                    <div class="p-3 bg-brand-100 text-brand-600 rounded-lg">
+                        <i data-lucide="truck" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm text-slate-800">Envíos Seguros</h4>
+                        <p class="text-xs text-slate-500">A todo el país</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4 p-4 rounded-xl bg-slate-50 border border-slate-100">
+                    <div class="p-3 bg-brand-100 text-brand-600 rounded-lg">
+                        <i data-lucide="award" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm text-slate-800">Garantía Directa</h4>
+                        <p class="text-xs text-slate-500">Fabricantes directos</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CATÁLOGO DE PRODUCTOS -->
+    <main id="catalogo" class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+            <div>
+                <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Nuestros Productos</h2>
+                <p class="text-slate-500 text-sm mt-1">Explora nuestro catálogo de muebles metálicos, de madera y mixtos.</p>
+            </div>
+
+            <!-- Filtros dinámicos -->
+            <div class="flex flex-wrap gap-2" id="categoryFilters"></div>
+        </div>
+
+        <!-- Grilla de Productos -->
+        <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+
+        <!-- Sin resultados -->
+        <div id="emptyState" class="hidden text-center py-16 bg-white rounded-2xl border border-dashed border-slate-300">
+            <i data-lucide="package-x" class="w-16 h-16 mx-auto text-slate-300 mb-4"></i>
+            <h3 class="text-lg font-bold text-slate-700">No encontramos productos</h3>
+            <p class="text-slate-500 text-sm mt-1">Intenta con otro término de búsqueda o cambia de categoría.</p>
+            <button onclick="resetFilters()" class="mt-4 px-4 py-2 bg-brand-600 text-white font-medium text-sm rounded-lg hover:bg-brand-700 transition">
+                Restablecer Filtros
+            </button>
+        </div>
+    </main>
+
+    <!-- SECCIÓN SOBRE NOSOTROS -->
+    <section id="nosotros" class="bg-slate-100 py-16 border-t border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <span id="aboutSub" class="text-brand-600 font-bold text-sm uppercase tracking-wider">Sobre Nosotros</span>
+                    <h2 id="aboutTitle" class="text-3xl font-extrabold text-slate-900 mt-2 mb-4">Ingeniería y Diseño en Mueblería</h2>
+                    <p id="aboutText1" class="text-slate-600 mb-4 leading-relaxed">
+                        Nos especializamos en el diseño y manufactura de mobiliario metálico y de madera de alta resistencia. Diseñados para integrarse tanto en espacios corporativos como en hogares.
+                    </p>
+                    <p id="aboutText2" class="text-slate-600 mb-6 leading-relaxed">
+                        Cada pieza refleja nuestro compromiso con la firmeza, la ergonomía y los acabados de primera calidad, asegurando muebles duraderos.
+                    </p>
+                    <div class="grid grid-cols-2 gap-4 border-t border-slate-200 pt-6">
+                        <div>
+                            <span class="text-2xl font-black text-brand-600 block">+10 Años</span>
+                            <span class="text-xs text-slate-500 font-medium">De Experiencia</span>
+                        </div>
+                        <div>
+                            <span class="text-2xl font-black text-brand-600 block">100% Personalizable</span>
+                            <span class="text-xs text-slate-500 font-medium">Proyectos Especiales</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80" alt="Taller Metálico" class="rounded-2xl shadow-md h-64 object-cover w-full">
+                    <img src="https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=600&q=80" alt="Carpintería y Madera" class="rounded-2xl shadow-md h-64 object-cover w-full mt-8">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER CON ACCESO DISCRETO PARA ADMINISTRADOR -->
+    <footer id="contacto" class="bg-brand-900 text-slate-300 pt-12 pb-8 border-t border-brand-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 pb-8 border-b border-brand-800">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-brand-600 rounded-lg flex items-center justify-center text-white font-black text-xl">
+                            RZ
+                        </div>
+                        <span id="footerBrandName" class="font-extrabold text-xl tracking-tight text-white">RZ SOLUCIONES</span>
+                    </div>
+                    <p id="footerDescription" class="text-sm text-slate-400">
+                        Líderes en soluciones de amueblamiento metálico y de madera para empresas y hogares.
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-white font-bold text-base mb-4">Categorías</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#catalogo" onclick="filterByCategory('Metálicos')" class="hover:text-white transition">Muebles Metálicos</a></li>
+                        <li><a href="#catalogo" onclick="filterByCategory('Madera')" class="hover:text-white transition">Muebles de Madera</a></li>
+                        <li><a href="#catalogo" onclick="filterByCategory('Combinados')" class="hover:text-white transition">Línea Combinada</a></li>
+                        <li><a href="#catalogo" onclick="filterByCategory('Oficina')" class="hover:text-white transition">Oficina y Trabajo</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-white font-bold text-base mb-4">Contacto</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4 text-brand-500"></i> <span id="footerAddress">Av. Industrial 405, Zona Industrial</span></li>
+                        <li class="flex items-center gap-2"><i data-lucide="phone" class="w-4 h-4 text-brand-500"></i> <span id="footerPhone">+52 (55) 1234-5678</span></li>
+                        <li class="flex items-center gap-2"><i data-lucide="mail" class="w-4 h-4 text-brand-500"></i> <span id="footerEmail">contacto@rzsoluciones.com</span></li>
+                        <li class="flex items-center gap-2"><i data-lucide="clock" class="w-4 h-4 text-brand-500"></i> <span id="footerHours">Lun - Vie: 8:00 AM - 6:00 PM</span></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-white font-bold text-base mb-4">Atención al Cliente</h3>
+                    <p class="text-xs text-slate-400 mb-3">¿Requieres una cotización por volumen?</p>
+                    <a id="footerWaBtn" href="https://wa.me/525512345678" target="_blank" class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold px-4 py-2.5 rounded-lg transition">
+                        <i data-lucide="message-circle" class="w-4 h-4"></i> WhatsApp Directo
+                    </a>
+                </div>
+            </div>
+
+            <!-- Footer Bottom con enlace de Login Discreto -->
+            <div class="pt-6 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500 gap-4">
+                <p>&copy; <span id="copyrightYear">2026</span> <span id="footerCopyName">RZ Soluciones</span>. Todos los derechos reservados.</p>
+                <div class="flex items-center gap-4">
+                    <a href="#" class="hover:text-slate-300">Términos y Condiciones</a>
+                    <span>•</span>
+                    <!-- Acceso exclusivo/discreto para el Administrador -->
+                    <button id="footerAdminTrigger" onclick="openAdminLogin()" class="hover:text-slate-300 flex items-center gap-1 opacity-75 hover:opacity-100 transition">
+                        <i data-lucide="lock" class="w-3 h-3"></i>
+                        <span>Acceso Administrador</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- MODAL DE LOGIN / INICIO DE SESIÓN ADMINISTRADOR -->
+    <div id="loginModal" class="fixed inset-0 z-50 overflow-y-auto hidden">
+        <div class="flex min-h-screen items-center justify-center p-4 text-center">
+            <div class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm transition-opacity" onclick="closeAdminLogin()"></div>
+
+            <div class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-md z-10">
+                <div class="bg-brand-900 px-6 py-4 text-white flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="shield" class="w-5 h-5 text-brand-200"></i>
+                        <h3 class="text-base font-bold">Autenticación de Administrador</h3>
+                    </div>
+                    <button onclick="closeAdminLogin()" class="text-slate-300 hover:text-white">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+
+                <form onsubmit="handleAdminLogin(event)" class="p-6 space-y-4">
+                    <p class="text-xs text-slate-500">Ingresa tus credenciales para administrar el catálogo y modificar la información de la empresa.</p>
+                    
+                    <div id="loginError" class="hidden p-3 bg-red-50 text-red-700 text-xs rounded-lg border border-red-200 font-medium">
+                        Credenciales incorrectas. Intenta de nuevo.
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Usuario</label>
+                        <input type="text" id="loginUser" required placeholder="admin" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Contraseña</label>
+                        <input type="password" id="loginPass" required placeholder="••••••••" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                    </div>
+
+                    <div class="pt-2 flex justify-end gap-3">
+                        <button type="button" onclick="closeAdminLogin()" class="px-4 py-2 border border-slate-300 rounded-lg text-slate-600 text-xs font-semibold hover:bg-slate-50">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-xs font-bold shadow flex items-center gap-1.5">
+                            <i data-lucide="log-in" class="w-4 h-4"></i>
+                            Ingresar al Panel
+                        </button>
+                    </div>
+
+                    <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-[11px] text-slate-500 mt-2">
+                        <p class="font-bold text-slate-700 mb-0.5">Credenciales demo por defecto:</p>
+                        <p>Usuario: <code class="bg-white px-1 py-0.5 rounded border">admin</code> | Contraseña: <code class="bg-white px-1 py-0.5 rounded border">rz2026</code></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL COMPLETO DE PANEL DE ADMINISTRACIÓN (PROTEGIDO) -->
+    <div id="adminModal" class="fixed inset-0 z-50 overflow-y-auto hidden">
+        <div class="flex min-h-screen items-center justify-center p-3 sm:p-6 text-center">
+            <div class="fixed inset-0 bg-slate-900/75 backdrop-blur-sm transition-opacity" onclick="toggleAdminPanel()"></div>
+
+            <div class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all w-full max-w-5xl z-10 my-6">
+                <!-- Admin Header -->
+                <div class="bg-brand-900 px-6 py-4 text-white flex justify-between items-center border-b border-brand-800">
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="sliders" class="w-6 h-6 text-brand-200"></i>
+                        <div>
+                            <h3 class="text-lg font-extrabold leading-none">Panel de Control de Administrador</h3>
+                            <span class="text-[11px] text-brand-200 font-normal">RZ Soluciones • Control Total del Sitio</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button onclick="logoutAdmin()" class="text-xs bg-red-600/80 hover:bg-red-600 text-white font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1">
+                            <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+                            Cerrar Sesión
+                        </button>
+                        <button onclick="toggleAdminPanel()" class="text-slate-300 hover:text-white">
+                            <i data-lucide="x" class="w-6 h-6"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tabs del Panel -->
+                <div class="flex border-b border-slate-200 bg-slate-100 px-6 pt-3 gap-2">
+                    <button id="tabBtnProducts" onclick="switchAdminTab('products')" class="px-4 py-2.5 rounded-t-xl text-xs font-bold transition flex items-center gap-2 border-b-2 border-brand-600 bg-white text-brand-600">
+                        <i data-lucide="box" class="w-4 h-4"></i>
+                        Gestión de Catálogo
+                    </button>
+                    <button id="tabBtnCompany" onclick="switchAdminTab('company')" class="px-4 py-2.5 rounded-t-xl text-xs font-bold transition flex items-center gap-2 text-slate-600 hover:text-brand-600">
+                        <i data-lucide="building" class="w-4 h-4"></i>
+                        Información y Contacto Empresa
+                    </button>
+                </div>
+
+                <!-- CONTENIDO TAB 1: GESTIÓN DE CATÁLOGO -->
+                <div id="tabContentProducts" class="p-6 grid lg:grid-cols-12 gap-8 max-h-[75vh] overflow-y-auto">
+                    <!-- Formulario de Producto -->
+                    <div class="lg:col-span-5 bg-slate-50 p-5 rounded-xl border border-slate-200 h-fit">
+                        <h4 id="adminFormTitle" class="font-extrabold text-slate-800 text-base mb-4 flex items-center gap-2">
+                            <i data-lucide="plus-circle" class="w-4 h-4 text-brand-600"></i>
+                            Agregar Nuevo Producto
+                        </h4>
+                        <form id="productForm" onsubmit="saveProduct(event)" class="space-y-3.5">
+                            <input type="hidden" id="editProductId">
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nombre del Producto *</label>
+                                <input type="text" required id="prodName" placeholder="Ej. Estante Industrial Robusto" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none bg-white">
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Categoría *</label>
+                                    <select id="prodCategory" required class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none bg-white">
+                                        <option value="Metálicos">Metálicos</option>
+                                        <option value="Madera">Madera</option>
+                                        <option value="Combinados">Combinados</option>
+                                        <option value="Oficina">Oficina</option>
+                                        <option value="Hogar">Hogar</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Precio ($ MXN) *</label>
+                                    <input type="number" step="0.01" min="0" required id="prodPrice" placeholder="0.00" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none bg-white">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Material / Acabado</label>
+                                <input type="text" id="prodMaterial" placeholder="Ej. Acero Calibre 16 y Pino" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none bg-white">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Imagen del Producto *</label>
+                                <div class="space-y-2">
+                                    <div>
+                                        <span class="text-[10px] text-slate-500 font-medium block mb-1">Opción A: Subir Imagen desde archivo</span>
+                                        <input type="file" id="prodImageFile" accept="image/*" onchange="handleImageUpload(event)" class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100">
+                                    </div>
+                                    <div class="relative flex py-1 items-center">
+                                        <div class="flex-grow border-t border-slate-200"></div>
+                                        <span class="flex-shrink mx-2 text-[10px] text-slate-400 font-bold uppercase">o bien</span>
+                                        <div class="flex-grow border-t border-slate-200"></div>
+                                    </div>
+                                    <div>
+                                        <span class="text-[10px] text-slate-500 font-medium block mb-1">Opción B: Pegar enlace URL público</span>
+                                        <input type="url" id="prodImageUrl" oninput="handleImageUrlInput()" placeholder="https://ejemplo.com/mueble.jpg" class="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none bg-white">
+                                    </div>
+                                </div>
+
+                                <div id="imagePreviewContainer" class="mt-2 hidden border border-slate-200 rounded-lg p-2 bg-white flex items-center gap-3">
+                                    <img id="imagePreview" src="" alt="Vista previa" class="w-12 h-12 object-cover rounded">
+                                    <span class="text-[11px] text-slate-600 font-medium truncate flex-1">Imagen cargada correctamente</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Descripción breve *</label>
+                                <textarea id="prodDesc" rows="2" required placeholder="Detalles de construcción y uso..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none bg-white"></textarea>
+                            </div>
+
+                            <div class="pt-2 flex gap-2">
+                                <button type="button" id="btnCancelEdit" onclick="cancelEdit()" class="hidden w-1/3 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2.5 rounded-lg text-xs transition">
+                                    Cancelar
+                                </button>
+                                <button type="submit" id="btnSubmitProd" class="flex-1 bg-brand-600 hover:bg-brand-700 text-white font-bold py-2.5 rounded-lg text-xs shadow transition flex items-center justify-center gap-1.5">
+                                    <i data-lucide="check" class="w-4 h-4"></i>
+                                    <span id="btnSubmitProdText">Guardar Producto</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Lista Admin de Productos -->
+                    <div class="lg:col-span-7 flex flex-col">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="font-extrabold text-slate-800 text-base">Catálogo Activo (<span id="adminProdCount">0</span>)</h4>
+                            <button onclick="resetDefaultProducts()" class="text-xs text-slate-500 hover:text-brand-600 flex items-center gap-1">
+                                <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                                Restablecer Catálogo Demo
+                            </button>
+                        </div>
+
+                        <div id="adminProductList" class="space-y-3 overflow-y-auto pr-1 flex-1 max-h-[500px]"></div>
+                    </div>
+                </div>
+
+                <!-- CONTENIDO TAB 2: EDICIÓN DE EMPRESA Y CONTACTOS EN VIVO -->
+                <div id="tabContentCompany" class="p-6 hidden max-h-[75vh] overflow-y-auto">
+                    <form onsubmit="saveCompanySettings(event)" class="space-y-6">
+                        <div class="bg-brand-50 border border-brand-200 p-4 rounded-xl flex items-start gap-3">
+                            <i data-lucide="info" class="w-5 h-5 text-brand-600 flex-shrink-0 mt-0.5"></i>
+                            <div class="text-xs text-brand-900 leading-relaxed">
+                                Modifica los datos principales de la empresa. Al presionar <strong>"Guardar Datos de la Empresa"</strong>, se actualizarán instantáneamente los datos visibles en la cabecera, pie de página, banners de cotización y pedidos automáticos de WhatsApp.
+                            </div>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <!-- Datos Basicos -->
+                            <div class="space-y-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                                <h5 class="font-bold text-sm text-slate-900 flex items-center gap-2 border-b pb-2">
+                                    <i data-lucide="building-2" class="w-4 h-4 text-brand-600"></i> Identidad de la Empresa
+                                </h5>
+                                
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nombre Comercial de la Empresa</label>
+                                    <input type="text" id="cfgName" required class="w-full border border-slate-300 rounded-lg p-2.5 text-xs bg-white focus:ring-2 focus:ring-brand-500">
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Subtítulo / Especialidad</label>
+                                    <input type="text" id="cfgSubtitle" required class="w-full border border-slate-300 rounded-lg p-2.5 text-xs bg-white focus:ring-2 focus:ring-brand-500">
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Lema o Frase del Header</label>
+                                    <input type="text" id="cfgTagline" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs bg-white focus:ring-2 focus:ring-brand-500">
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Descripción Breve Footer</label>
+                                    <textarea id="cfgDesc" rows="2" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs bg-white focus:ring-2 focus:ring-brand-500"></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Contacto y Ubicación -->
+                            <div class="space-y-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                                <h5 class="font-bold text-sm text-slate-900 flex items-center gap-2 border-b pb-2">
+                                    <i data-lucide="phone-call" class="w-4 h-4 text-brand-600"></i> Canales de Contacto Directo
+                                </h5>
+
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Teléfono Principal de Atención</label>
+                                    <input type="text" id="cfgPhone" required class="w-full border border-slate-300 rounded-lg p-2.5 text-xs bg-white focus:ring-2 focus:ring-brand-500">
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Número WhatsApp (sin espacios ni símbolos, ej: 525512345678)</label>
+                                    <input type="text" id="cfgWhatsapp" required class="w-full border border-slate-300 rounded-lg p-2.5 text-xs bg-white focus:ring-2 focus:ring-brand-500">
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Correo Electrónico Corporativo</label>
+                                    <input type="email" id="cfgEmail" required class="w-full border border-slate-300 rounded-lg p-2.5 text-xs bg-white focus:ring-2 focus:ring-brand-500">
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Dirección Física / Planta</label>
+                                    <input type="text" id="cfgAddress" required class="w-full border border-slate-300 rounded-lg p-2.5 text-xs bg-white focus:ring-2 focus:ring-brand-500">
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Horarios de Atención</label>
+                                    <input type="text" id="cfgHours" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs bg-white focus:ring-2 focus:ring-brand-500">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-2 flex justify-end gap-3 border-t border-slate-200">
+                            <button type="button" onclick="resetDefaultCompanySettings()" class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-600 hover:bg-slate-100 text-xs font-semibold">
+                                Restablecer Datos Iniciales
+                            </button>
+                            <button type="submit" class="px-6 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold shadow-lg transition flex items-center gap-2">
+                                <i data-lucide="save" class="w-4 h-4"></i>
+                                Guardar Datos de la Empresa
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DRAWER DEL CARRITO -->
+    <div id="cartModal" class="fixed inset-0 z-50 overflow-hidden hidden">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="toggleCart()"></div>
+
+        <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
+            <div class="pointer-events-auto w-screen max-w-md bg-white shadow-2xl flex flex-col">
+                <div class="p-6 bg-brand-900 text-white flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="shopping-bag" class="w-6 h-6"></i>
+                        <h2 class="text-lg font-bold">Tu Carrito de Compras</h2>
+                    </div>
+                    <button onclick="toggleCart()" class="text-slate-300 hover:text-white transition">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
+
+                <div id="cartItemsContainer" class="flex-1 overflow-y-auto p-6 space-y-4"></div>
+
+                <div id="cartFooter" class="p-6 border-t border-slate-200 bg-slate-50 space-y-3">
+                    <div class="space-y-1.5 text-sm">
+                        <div class="flex justify-between text-slate-600">
+                            <span>Subtotal</span>
+                            <span id="cartSubtotal" class="font-medium">$0.00</span>
+                        </div>
+                        <div class="flex justify-between text-slate-600">
+                            <span>IVA (16%)</span>
+                            <span id="cartTax" class="font-medium">$0.00</span>
+                        </div>
+                        <div class="flex justify-between text-base font-extrabold text-slate-900 pt-2 border-t border-slate-200">
+                            <span>Total</span>
+                            <span id="cartTotal" class="text-brand-600">$0.00</span>
+                        </div>
+                    </div>
+
+                    <button onclick="openCheckout()" id="btnCheckout" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg transition flex items-center justify-center gap-2">
+                        <span>Procesar Pedido</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CHECKOUT CLIENTE -->
+    <div id="checkoutModal" class="fixed inset-0 z-50 overflow-y-auto hidden">
+        <div class="flex min-h-screen items-center justify-center p-4 text-center sm:p-0">
+            <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="closeCheckout()"></div>
+
+            <div class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-xl z-10">
+                <div class="bg-brand-900 px-6 py-4 text-white flex justify-between items-center">
+                    <h3 class="text-lg font-bold flex items-center gap-2">
+                        <i data-lucide="clipboard-check" class="w-5 h-5 text-brand-200"></i>
+                        Confirmar Pedido - <span id="checkoutBrandTitle">RZ Soluciones</span>
+                    </h3>
+                    <button onclick="closeCheckout()" class="text-slate-300 hover:text-white">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+
+                <form id="checkoutForm" onsubmit="processOrder(event)" class="p-6 space-y-4">
+                    <div class="bg-brand-50 p-3 rounded-lg border border-brand-100 text-xs text-brand-800 flex justify-between items-center mb-2">
+                        <span>Total a Pagar (incluye IVA 16%):</span>
+                        <span id="checkoutTotal" class="text-base font-extrabold text-brand-600">$0.00</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nombre Completo *</label>
+                            <input type="text" required id="custName" placeholder="Ej. Juan Pérez" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Teléfono / WhatsApp *</label>
+                            <input type="tel" required id="custPhone" placeholder="Ej. 55 1234 5678" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Correo Electrónico *</label>
+                        <input type="email" required id="custEmail" placeholder="correo@ejemplo.com" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Dirección de Entrega *</label>
+                        <input type="text" required id="custAddress" placeholder="Calle, número exterior e interior" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Ciudad / Municipio *</label>
+                            <input type="text" required id="custCity" placeholder="Ej. Ciudad de México" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Código Postal *</label>
+                            <input type="text" required id="custZip" placeholder="Ej. 06700" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Notas o Especificaciones adicionales</label>
+                        <textarea id="custNotes" rows="2" placeholder="Ej. Medidas específicas, horario de entrega preferido..." class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none"></textarea>
+                    </div>
+
+                    <div class="pt-4 border-t border-slate-200 flex justify-end gap-3">
+                        <button type="button" onclick="closeCheckout()" class="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-600 hover:bg-slate-50 text-sm font-semibold">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="px-6 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold shadow-md transition flex items-center gap-2">
+                            <span>Confirmar y Enviar Pedido</span>
+                            <i data-lucide="check-circle" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIRMACIÓN DE PEDIDO -->
+    <div id="successModal" class="fixed inset-0 z-50 overflow-y-auto hidden">
+        <div class="flex min-h-screen items-center justify-center p-4 text-center">
+            <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
+
+            <div class="relative transform overflow-hidden rounded-2xl bg-white p-8 text-center shadow-2xl transition-all max-w-md w-full z-10">
+                <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i data-lucide="check" class="w-10 h-10"></i>
+                </div>
+                <h3 class="text-2xl font-black text-slate-900 mb-1">¡Pedido Registrado!</h3>
+                <p class="text-xs text-slate-500 mb-4">Folio de Orden: <span id="orderNumber" class="font-mono font-bold text-brand-600">#RZ-0000</span></p>
+                
+                <p class="text-sm text-slate-600 mb-6 leading-relaxed">
+                    Hemos preparado tu resumen de compra. Haz clic abajo para enviar tu orden por WhatsApp directamente a nuestro equipo de ventas.
+                </p>
+
+                <div class="space-y-3">
+                    <a id="btnSendWhatsappOrder" href="#" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2 shadow">
+                        <i data-lucide="message-circle" class="w-5 h-5"></i>
+                        Enviar Resumen por WhatsApp
+                    </a>
+                    <button onclick="closeSuccessModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl transition text-xs">
+                        Continuar Comprando
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOTIFICACIÓN TOAST -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none">
+        <div class="p-1 bg-brand-500 rounded-lg text-white">
+            <i data-lucide="check" class="w-4 h-4"></i>
+        </div>
+        <span id="toastMsg" class="text-sm font-medium">Notificación</span>
+    </div>
+
+    <!-- JAVASCRIPT DE LA APLICACIÓN -->
+    <script>
+        // CONFIGURACIÓN POR DEFECTO DE LA EMPRESA
+        const defaultCompanyConfig = {
+            name: "RZ Soluciones",
+            subtitle: "Muebles Metálicos & Madera",
+            tagline: "Fabricación a medida • Calidad Garantizada",
+            description: "Líderes en soluciones de amueblamiento metálico y de madera para empresas y hogares.",
+            phone: "+52 (55) 1234-5678",
+            whatsapp: "525512345678",
+            email: "contacto@rzsoluciones.com",
+            address: "Av. Industrial 405, Zona Industrial",
+            hours: "Lun - Vie: 8:00 AM - 6:00 PM"
+        };
+
+        // PRODUCTOS INICIALES DEMO
+        const initialProducts = [
+            {
+                id: 1,
+                name: "Escritorio Industrial Roble & Acero",
+                category: "Combinados",
+                price: 4850.00,
+                material: "Estructura de Acero y Cubierta de Roble",
+                image: "https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?auto=format&fit=crop&w=600&q=80",
+                description: "Escritorio ejecutivo con base tubular reforzada en pintura electrostática y cubierta sólida de roble natural.",
+                use: "Oficina / Hogar"
+            },
+            {
+                id: 2,
+                name: "Estantería Pesada Metálica 5 Niveles",
+                category: "Metálicos",
+                price: 3200.00,
+                material: "Acero Calibre 18 Revestido",
+                image: "https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&w=600&q=80",
+                description: "Estante ultra resistente diseñado para almacenamiento pesado en taller, bodega u oficina moderna.",
+                use: "Industrial / Almacén"
+            },
+            {
+                id: 3,
+                name: "Mesa Comedor Parota con Patas de Acero",
+                category: "Madera",
+                price: 11500.00,
+                material: "Madera Sólida de Parota y Acero",
+                image: "https://images.unsplash.com/photo-1615066390971-03e4e1c36ddf?auto=format&fit=crop&w=600&q=80",
+                description: "Mesa de diseño exclusivo con beta de madera parota natural e imponentes patas de perfil cuadrado.",
+                use: "Hogar"
+            },
+            {
+                id: 4,
+                name: "Archivero Metálico de Seguridad 4 Cajones",
+                category: "Oficina",
+                price: 3950.00,
+                material: "Lámina de Acero Reforzada",
+                image: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=600&q=80",
+                description: "Mueble archivero con cerradura centralizada, correderas de extensión suave y acabado anticorrosivo.",
+                use: "Oficina"
+            },
+            {
+                id: 5,
+                name: "Credenza Baja Madera de Pino & Marco Negro",
+                category: "Combinados",
+                price: 5600.00,
+                material: "Pino Tratado y Estructura Metálica",
+                image: "https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=600&q=80",
+                description: "Credenza estilo industrial con amplios compartimentos internos, ideal para credenzas de TV u oficina.",
+                use: "Hogar / Oficina"
+            },
+            {
+                id: 6,
+                name: "Silla de Trabajo Estructura de Acero",
+                category: "Metálicos",
+                price: 1890.00,
+                material: "Acero Cromado y Tapiz de Alta Densidad",
+                image: "https://images.unsplash.com/photo-1580481072645-022f9a6d1270?auto=format&fit=crop&w=600&q=80",
+                description: "Silla ergonómica de estructura metálica soldada para máxima resistencia en jornadas continuas.",
+                use: "Oficina"
+            }
+        ];
+
+        // ESTADOS DE LOCALSTORAGE
+        let products = JSON.parse(localStorage.getItem('rz_products')) || [...initialProducts];
+        let companyConfig = JSON.parse(localStorage.getItem('rz_company_cfg')) || { ...defaultCompanyConfig };
+        let isAdminLoggedIn = JSON.parse(localStorage.getItem('rz_admin_logged')) || false;
+
+        // ESTADOS DE INTERFAZ
+        let cart = [];
+        let selectedCategory = "Todos";
+        let searchQuery = "";
+        let currentImageBase64 = "";
+        let lastOrderData = null;
+
+        const categories = ["Todos", "Muebles Metálicos", "Muebles de Madera", "Combinados", "Oficina", "Hogar"];
+
+        // INICIALIZACIÓN DE PÁGINA
+        document.addEventListener('DOMContentLoaded', () => {
+            applyCompanyConfig();
+            updateAdminUIState();
+            renderCategories();
+            renderProducts();
+            updateCartUI();
+            renderAdminProducts();
+            lucide.createIcons();
+        });
+
+        // APLICAR CONFIGURACIÓN DE EMPRESA A LA INTERFAZ
+        function applyCompanyConfig() {
+            document.getElementById('docTitle').textContent = `${companyConfig.name} | ${companyConfig.subtitle}`;
+            
+            // Header
+            document.getElementById('headerPhone').textContent = companyConfig.phone;
+            document.getElementById('headerEmail').textContent = companyConfig.email;
+            document.getElementById('headerTagline').textContent = companyConfig.tagline;
+            document.getElementById('brandNameDisplay').innerHTML = `${companyConfig.name.split(' ')[0] || 'RZ'} <span class="text-brand-600">${companyConfig.name.split(' ').slice(1).join(' ') || 'SOLUCIONES'}</span>`;
+            document.getElementById('brandSubtitleDisplay').textContent = companyConfig.subtitle;
+
+            // Hero y Cotización
+            document.getElementById('heroWhatsappBtn').href = `https://wa.me/${companyConfig.whatsapp}`;
+
+            // Footer
+            document.getElementById('footerBrandName').textContent = companyConfig.name.toUpperCase();
+            document.getElementById('footerDescription').textContent = companyConfig.description;
+            document.getElementById('footerAddress').textContent = companyConfig.address;
+            document.getElementById('footerPhone').textContent = companyConfig.phone;
+            document.getElementById('footerEmail').textContent = companyConfig.email;
+            document.getElementById('footerHours').textContent = companyConfig.hours;
+            document.getElementById('footerWaBtn').href = `https://wa.me/${companyConfig.whatsapp}`;
+            document.getElementById('footerCopyName').textContent = companyConfig.name;
+            document.getElementById('checkoutBrandTitle').textContent = companyConfig.name;
+
+            // Cargar datos en el formulario del panel admin
+            document.getElementById('cfgName').value = companyConfig.name;
+            document.getElementById('cfgSubtitle').value = companyConfig.subtitle;
+            document.getElementById('cfgTagline').value = companyConfig.tagline;
+            document.getElementById('cfgDesc').value = companyConfig.description;
+            document.getElementById('cfgPhone').value = companyConfig.phone;
+            document.getElementById('cfgWhatsapp').value = companyConfig.whatsapp;
+            document.getElementById('cfgEmail').value = companyConfig.email;
+            document.getElementById('cfgAddress').value = companyConfig.address;
+            document.getElementById('cfgHours').value = companyConfig.hours;
+        }
+
+        // CONTROL DE SESIÓN Y ROL
+        function openAdminLogin() {
+            if (isAdminLoggedIn) {
+                toggleAdminPanel();
+            } else {
+                document.getElementById('loginModal').classList.remove('hidden');
+            }
+        }
+
+        function closeAdminLogin() {
+            document.getElementById('loginModal').classList.add('hidden');
+            document.getElementById('loginError').classList.add('hidden');
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById('loginUser').value.trim();
+            const p = document.getElementById('loginPass').value.trim();
+
+            if (u === 'admin' && p === 'rz2026') {
+                isAdminLoggedIn = true;
+                localStorage.setItem('rz_admin_logged', 'true');
+                closeAdminLogin();
+                updateAdminUIState();
+                toggleAdminPanel();
+                showToast("Sesión de Administrador iniciada");
+            } else {
+                document.getElementById('loginError').classList.remove('hidden');
+            }
+        }
+
+        function logoutAdmin() {
+            isAdminLoggedIn = false;
+            localStorage.setItem('rz_admin_logged', 'false');
+            updateAdminUIState();
+            document.getElementById('adminModal').classList.add('hidden');
+            showToast("Sesión de Administrador cerrada");
+        }
+
+        function updateAdminUIState() {
+            const btnHeader = document.getElementById('btnAdminPanelHeader');
+            const badge = document.getElementById('adminBadge');
+
+            if (isAdminLoggedIn) {
+                btnHeader.classList.remove('hidden');
+                badge.classList.remove('hidden');
+            } else {
+                btnHeader.classList.add('hidden');
+                badge.classList.add('hidden');
+            }
+        }
+
+        // GUARDAR CAMBIOS DE EMPRESA (ADMIN)
+        function saveCompanySettings(e) {
+            e.preventDefault();
+            if (!isAdminLoggedIn) return;
+
+            companyConfig = {
+                name: document.getElementById('cfgName').value.trim(),
+                subtitle: document.getElementById('cfgSubtitle').value.trim(),
+                tagline: document.getElementById('cfgTagline').value.trim(),
+                description: document.getElementById('cfgDesc').value.trim(),
+                phone: document.getElementById('cfgPhone').value.trim(),
+                whatsapp: document.getElementById('cfgWhatsapp').value.trim().replace(/[^0-9]/g, ''),
+                email: document.getElementById('cfgEmail').value.trim(),
+                address: document.getElementById('cfgAddress').value.trim(),
+                hours: document.getElementById('cfgHours').value.trim()
+            };
+
+            localStorage.setItem('rz_company_cfg', JSON.stringify(companyConfig));
+            applyCompanyConfig();
+            showToast("Datos de la empresa actualizados correctamente");
+        }
+
+        function resetDefaultCompanySettings() {
+            if (confirm("¿Deseas restablecer los datos de la empresa a los valores por defecto?")) {
+                companyConfig = { ...defaultCompanyConfig };
+                localStorage.setItem('rz_company_cfg', JSON.stringify(companyConfig));
+                applyCompanyConfig();
+                showToast("Datos de empresa restablecidos");
+            }
+        }
+
+        // PESTAÑAS DEL PANEL ADMIN
+        function switchAdminTab(tab) {
+            const btnProd = document.getElementById('tabBtnProducts');
+            const btnComp = document.getElementById('tabBtnCompany');
+            const contentProd = document.getElementById('tabContentProducts');
+            const contentComp = document.getElementById('tabContentCompany');
+
+            if (tab === 'products') {
+                btnProd.className = "px-4 py-2.5 rounded-t-xl text-xs font-bold transition flex items-center gap-2 border-b-2 border-brand-600 bg-white text-brand-600";
+                btnComp.className = "px-4 py-2.5 rounded-t-xl text-xs font-bold transition flex items-center gap-2 text-slate-600 hover:text-brand-600";
+                contentProd.classList.remove('hidden');
+                contentComp.classList.add('hidden');
+            } else {
+                btnComp.className = "px-4 py-2.5 rounded-t-xl text-xs font-bold transition flex items-center gap-2 border-b-2 border-brand-600 bg-white text-brand-600";
+                btnProd.className = "px-4 py-2.5 rounded-t-xl text-xs font-bold transition flex items-center gap-2 text-slate-600 hover:text-brand-600";
+                contentComp.classList.remove('hidden');
+                contentProd.classList.add('hidden');
+            }
+            lucide.createIcons();
+        }
+
+        // RENDERIZAR CATEGORÍAS
+        function renderCategories() {
+            const container = document.getElementById('categoryFilters');
+            container.innerHTML = categories.map(cat => {
+                const isSelected = (cat === selectedCategory) || 
+                                   (cat === "Muebles Metálicos" && selectedCategory === "Metálicos") ||
+                                   (cat === "Muebles de Madera" && selectedCategory === "Madera");
+                
+                return `
+                    <button onclick="filterByCategory('${cat}')" 
+                        class="px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                            isSelected 
+                            ? 'bg-brand-600 text-white shadow-md' 
+                            : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'
+                        }">
+                        ${cat}
+                    </button>
+                `;
+            }).join('');
+        }
+
+        // RENDERIZAR PRODUCTOS
+        function renderProducts() {
+            const grid = document.getElementById('productGrid');
+            const empty = document.getElementById('emptyState');
+
+            const filtered = products.filter(product => {
+                let matchesCategory = false;
+                if (selectedCategory === "Todos") matchesCategory = true;
+                else if (selectedCategory === "Muebles Metálicos" || selectedCategory === "Metálicos") matchesCategory = product.category === "Metálicos";
+                else if (selectedCategory === "Muebles de Madera" || selectedCategory === "Madera") matchesCategory = product.category === "Madera";
+                else matchesCategory = product.category === selectedCategory;
+
+                const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                      product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                      (product.material && product.material.toLowerCase().includes(searchQuery.toLowerCase()));
+
+                return matchesCategory && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                empty.classList.remove('hidden');
+                return;
+            }
+
+            empty.classList.add('hidden');
+            grid.innerHTML = filtered.map(product => `
+                <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group">
+                    <div class="relative overflow-hidden bg-slate-100 h-48">
+                        <img src="${product.image}" alt="${product.name}" onerror="this.src='https://placehold.co/600x400/003d7a/ffffff?text=RZ+Soluciones'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <span class="absolute top-3 left-3 bg-brand-900/80 backdrop-blur-sm text-white text-[10px] font-bold px-2.5 py-1 rounded-md">
+                            ${product.category}
+                        </span>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col justify-between">
+                        <div>
+                            <div class="text-[11px] font-semibold text-brand-600 mb-1 flex items-center gap-1">
+                                <i data-lucide="layers" class="w-3 h-3"></i>
+                                ${product.material || product.category}
+                            </div>
+                            <h3 class="font-bold text-slate-900 text-base leading-snug mb-2 group-hover:text-brand-600 transition-colors">
+                                ${product.name}
+                            </h3>
+                            <p class="text-slate-500 text-xs line-clamp-2 mb-4">
+                                ${product.description}
+                            </p>
+                        </div>
+
+                        <div>
+                            <div class="flex items-baseline justify-between mb-4">
+                                <div>
+                                    <span class="text-xs text-slate-400 block font-medium">Precio Unitario</span>
+                                    <span class="text-xl font-black text-slate-900">$${parseFloat(product.price).toLocaleString('es-MX', {minimumFractionDigits: 2})}</span>
+                                </div>
+                                <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium">${product.use || 'Garantizado'}</span>
+                            </div>
+
+                            <button onclick="addToCart(${product.id})" class="w-full bg-slate-900 hover:bg-brand-600 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-colors duration-200 flex items-center justify-center gap-2 shadow-sm">
+                                <i data-lucide="shopping-cart" class="w-4 h-4"></i>
+                                Agregar al Carrito
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            lucide.createIcons();
+        }
+
+        function filterByCategory(cat) {
+            selectedCategory = cat;
+            renderCategories();
+            renderProducts();
+        }
+
+        function filterProducts() {
+            searchQuery = document.getElementById('searchInput').value;
+            renderProducts();
+        }
+
+        function filterProductsMobile() {
+            searchQuery = document.getElementById('searchInputMobile').value;
+            renderProducts();
+        }
+
+        function resetFilters() {
+            selectedCategory = "Todos";
+            searchQuery = "";
+            document.getElementById('searchInput').value = "";
+            document.getElementById('searchInputMobile').value = "";
+            renderCategories();
+            renderProducts();
+        }
+
+        // OPERACIONES DE PANEL DE CONTROL ADMIN
+        function toggleAdminPanel() {
+            if (!isAdminLoggedIn) {
+                openAdminLogin();
+                return;
+            }
+            const modal = document.getElementById('adminModal');
+            modal.classList.toggle('hidden');
+            if (!modal.classList.contains('hidden')) {
+                renderAdminProducts();
+            }
+        }
+
+        function handleImageUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    currentImageBase64 = event.target.result;
+                    document.getElementById('prodImageUrl').value = "";
+                    showImagePreview(currentImageBase64);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function handleImageUrlInput() {
+            const url = document.getElementById('prodImageUrl').value;
+            if (url) {
+                document.getElementById('prodImageFile').value = "";
+                currentImageBase64 = url;
+                showImagePreview(url);
+            } else {
+                hideImagePreview();
+            }
+        }
+
+        function showImagePreview(src) {
+            const preview = document.getElementById('imagePreview');
+            const container = document.getElementById('imagePreviewContainer');
+            preview.src = src;
+            container.classList.remove('hidden');
+        }
+
+        function hideImagePreview() {
+            document.getElementById('imagePreviewContainer').classList.add('hidden');
+            currentImageBase64 = "";
+        }
+
+        function saveProduct(e) {
+            e.preventDefault();
+            if (!isAdminLoggedIn) return;
+
+            const editId = document.getElementById('editProductId').value;
+            const name = document.getElementById('prodName').value.trim();
+            const category = document.getElementById('prodCategory').value;
+            const price = parseFloat(document.getElementById('prodPrice').value);
+            const material = document.getElementById('prodMaterial').value.trim() || category;
+            const description = document.getElementById('prodDesc').value.trim();
+            const imageUrl = currentImageBase64 || document.getElementById('prodImageUrl').value.trim();
+
+            if (!imageUrl) {
+                alert("Por favor sube una imagen o ingresa una URL válida.");
+                return;
+            }
+
+            if (editId) {
+                const idx = products.findIndex(p => p.id == editId);
+                if (idx !== -1) {
+                    products[idx] = {
+                        ...products[idx],
+                        name, category, price, material, description, image: imageUrl
+                    };
+                    showToast("Producto actualizado");
+                }
+            } else {
+                const newProduct = {
+                    id: Date.now(),
+                    name, category, price, material, description, image: imageUrl,
+                    use: "Diseño RZ"
+                };
+                products.unshift(newProduct);
+                showToast("Nuevo producto añadido");
+            }
+
+            localStorage.setItem('rz_products', JSON.stringify(products));
+            cancelEdit();
+            renderProducts();
+            renderAdminProducts();
+        }
+
+        function editProduct(id) {
+            const prod = products.find(p => p.id === id);
+            if (!prod) return;
+
+            document.getElementById('editProductId').value = prod.id;
+            document.getElementById('prodName').value = prod.name;
+            document.getElementById('prodCategory').value = prod.category;
+            document.getElementById('prodPrice').value = prod.price;
+            document.getElementById('prodMaterial').value = prod.material || "";
+            document.getElementById('prodDesc').value = prod.description;
+
+            if (prod.image.startsWith('data:')) {
+                currentImageBase64 = prod.image;
+                document.getElementById('prodImageUrl').value = "";
+            } else {
+                document.getElementById('prodImageUrl').value = prod.image;
+                currentImageBase64 = prod.image;
+            }
+            showImagePreview(prod.image);
+
+            document.getElementById('adminFormTitle').innerHTML = `<i data-lucide="edit-3" class="w-4 h-4 text-brand-600"></i> Editar Producto`;
+            document.getElementById('btnSubmitProdText').textContent = "Guardar Cambios";
+            document.getElementById('btnCancelEdit').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function cancelEdit() {
+            document.getElementById('productForm').reset();
+            document.getElementById('editProductId').value = "";
+            currentImageBase64 = "";
+            hideImagePreview();
+
+            document.getElementById('adminFormTitle').innerHTML = `<i data-lucide="plus-circle" class="w-4 h-4 text-brand-600"></i> Agregar Nuevo Producto`;
+            document.getElementById('btnSubmitProdText').textContent = "Guardar Producto";
+            document.getElementById('btnCancelEdit').classList.add('hidden');
+            lucide.createIcons();
+        }
+
+        function deleteProduct(id) {
+            if (!isAdminLoggedIn) return;
+            if (confirm("¿Estás seguro de eliminar este producto del catálogo?")) {
+                products = products.filter(p => p.id !== id);
+                localStorage.setItem('rz_products', JSON.stringify(products));
+                renderProducts();
+                renderAdminProducts();
+                showToast("Producto eliminado");
+            }
+        }
+
+        function resetDefaultProducts() {
+            if (confirm("¿Restablecer el catálogo con productos iniciales demo?")) {
+                products = [...initialProducts];
+                localStorage.setItem('rz_products', JSON.stringify(products));
+                renderProducts();
+                renderAdminProducts();
+                showToast("Catálogo restablecido");
+            }
+        }
+
+        function renderAdminProducts() {
+            const container = document.getElementById('adminProductList');
+            document.getElementById('adminProdCount').textContent = products.length;
+
+            if (products.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 text-slate-400 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                        <p class="text-xs">No hay productos cargados en el sistema.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = products.map(prod => `
+                <div class="flex items-center justify-between p-3 bg-white rounded-xl border border-slate-200 hover:border-brand-300 transition shadow-sm">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <img src="${prod.image}" onerror="this.src='https://placehold.co/100x100/003d7a/ffffff?text=RZ'" class="w-12 h-12 object-cover rounded-lg border border-slate-100 flex-shrink-0">
+                        <div class="min-w-0">
+                            <h5 class="font-bold text-xs text-slate-800 truncate">${prod.name}</h5>
+                            <div class="flex items-center gap-2 mt-0.5">
+                                <span class="text-[10px] font-semibold text-brand-600 bg-brand-50 px-2 py-0.5 rounded">${prod.category}</span>
+                                <span class="text-xs font-black text-slate-900">$${parseFloat(prod.price).toLocaleString('es-MX', {minimumFractionDigits: 2})}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-1.5 ml-2">
+                        <button onclick="editProduct(${prod.id})" class="p-2 text-slate-600 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition" title="Editar">
+                            <i data-lucide="edit-2" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="deleteProduct(${prod.id})" class="p-2 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Eliminar">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            lucide.createIcons();
+        }
+
+        // CARRITO Y CHECKOUT
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            const existing = cart.find(item => item.id === productId);
+            if (existing) {
+                existing.quantity += 1;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+
+            updateCartUI();
+            showToast(`"${product.name}" agregado al carrito`);
+        }
+
+        function updateQuantity(productId, change) {
+            const item = cart.find(p => p.id === productId);
+            if (item) {
+                item.quantity += change;
+                if (item.quantity <= 0) {
+                    removeFromCart(productId);
+                    return;
+                }
+            }
+            updateCartUI();
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cartCount').textContent = totalItems;
+
+            const container = document.getElementById('cartItemsContainer');
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 text-slate-400">
+                        <i data-lucide="shopping-cart" class="w-12 h-12 mx-auto mb-3 opacity-40"></i>
+                        <p class="font-medium text-sm">Tu carrito está vacío</p>
+                        <p class="text-xs mt-1">Explora nuestro catálogo e inicia tu pedido</p>
+                    </div>
+                `;
+                document.getElementById('btnCheckout').disabled = true;
+                document.getElementById('btnCheckout').classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                document.getElementById('btnCheckout').disabled = false;
+                document.getElementById('btnCheckout').classList.remove('opacity-50', 'cursor-not-allowed');
+
+                container.innerHTML = cart.map(item => `
+                    <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200">
+                        <img src="${item.image}" onerror="this.src='https://placehold.co/100x100/003d7a/ffffff?text=RZ'" alt="${item.name}" class="w-16 h-16 object-cover rounded-lg">
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-bold text-xs text-slate-800 truncate">${item.name}</h4>
+                            <p class="text-xs font-black text-brand-600 mt-0.5">$${parseFloat(item.price).toLocaleString('es-MX', {minimumFractionDigits: 2})}</p>
+                            
+                            <div class="flex items-center gap-2 mt-2">
+                                <button onclick="updateQuantity(${item.id}, -1)" class="w-6 h-6 rounded bg-white border border-slate-300 flex items-center justify-center text-xs font-bold hover:bg-slate-100">-</button>
+                                <span class="text-xs font-bold text-slate-700 w-4 text-center">${item.quantity}</span>
+                                <button onclick="updateQuantity(${item.id}, 1)" class="w-6 h-6 rounded bg-white border border-slate-300 flex items-center justify-center text-xs font-bold hover:bg-slate-100">+</button>
+                            </div>
+                        </div>
+                        <button onclick="removeFromCart(${item.id})" class="text-slate-400 hover:text-red-500 p-1">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                `).join('');
+            }
+
+            const subtotal = cart.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
+            const tax = subtotal * 0.16;
+            const total = subtotal + tax;
+
+            document.getElementById('cartSubtotal').textContent = `$${subtotal.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+            document.getElementById('cartTax').textContent = `$${tax.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+            document.getElementById('cartTotal').textContent = `$${total.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+            document.getElementById('checkoutTotal').textContent = `$${total.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+
+            lucide.createIcons();
+        }
+
+        function toggleCart() {
+            document.getElementById('cartModal').classList.toggle('hidden');
+        }
+
+        function openCheckout() {
+            if (cart.length === 0) return;
+            toggleCart();
+            document.getElementById('checkoutModal').classList.remove('hidden');
+        }
+
+        function closeCheckout() {
+            document.getElementById('checkoutModal').classList.add('hidden');
+        }
+
+        function processOrder(e) {
+            e.preventDefault();
+
+            const orderNum = 'RZ-' + Math.floor(100000 + Math.random() * 900000);
+            document.getElementById('orderNumber').textContent = `#${orderNum}`;
+
+            const subtotal = cart.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
+            const tax = subtotal * 0.16;
+            const total = subtotal + tax;
+
+            const name = document.getElementById('custName').value.trim();
+            const phone = document.getElementById('custPhone').value.trim();
+            const email = document.getElementById('custEmail').value.trim();
+            const address = document.getElementById('custAddress').value.trim();
+            const city = document.getElementById('custCity').value.trim();
+
+            // Construir texto de WhatsApp dinámico
+            let itemsText = cart.map(i => `• ${i.quantity}x ${i.name} ($${(i.price * i.quantity).toLocaleString('es-MX')})`).join('%0A');
+            let waMsg = `*NUEVO PEDIDO EN ${companyConfig.name.toUpperCase()}*%0A` +
+                        `*Folio:* ${orderNum}%0A` +
+                        `*Cliente:* ${name}%0A` +
+                        `*Teléfono:* ${phone}%0A` +
+                        `*Dirección:* ${address}, ${city}%0A%0A` +
+                        `*PRODUCTOS:*%0A${itemsText}%0A%0A` +
+                        `*Total (con IVA):* $${total.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+
+            const waLink = `https://wa.me/${companyConfig.whatsapp}?text=${waMsg}`;
+            document.getElementById('btnSendWhatsappOrder').href = waLink;
+
+            cart = [];
+            updateCartUI();
+            document.getElementById('checkoutForm').reset();
+            closeCheckout();
+            document.getElementById('successModal').classList.remove('hidden');
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('successModal').classList.add('hidden');
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').textContent = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+            
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
